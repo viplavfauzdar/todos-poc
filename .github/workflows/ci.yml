@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build with Gradle
+        run: ./gradlew clean build --no-daemon
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-east-1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image (App Runner/ECS)
+        run: |
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/todos-poc:latest
+          docker buildx build --platform linux/amd64 -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+      - name: Build and push Docker image (Lambda)
+        run: |
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/todos-lambda:latest
+          docker buildx build --platform linux/amd64 -f Dockerfile.lambda -t $IMAGE_URI .
+          docker push $IMAGE_URI
