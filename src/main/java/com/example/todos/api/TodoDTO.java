@@ -1,0 +1,1 @@
+package com.example.todos.api; public record TodoDTO(String title, boolean done) {}

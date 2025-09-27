@@ -1,0 +1,1 @@
+package com.example.todos.model; public record Todo(Long id, String title, boolean done) {}

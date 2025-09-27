@@ -1,0 +1,11 @@
+# ---- build stage ----
+FROM eclipse-temurin:21-jdk AS build
+WORKDIR /src
+COPY . .
+RUN ./gradlew --no-daemon clean bootJar
+
+# ---- lambda runtime ----
+FROM public.ecr.aws/lambda/java:21
+COPY --from=build /src/build/libs/*-SNAPSHOT.jar ${LAMBDA_TASK_ROOT}/app.jar
+# Handler points to your StreamLambdaHandler
+CMD ["com.example.todos.lambda.StreamLambdaHandler::handleRequest"]
