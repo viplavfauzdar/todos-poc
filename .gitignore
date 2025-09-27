@@ -1,0 +1,35 @@
+# Build output
+/build/
+/out/
+/target/
+
+# Gradle
+.gradle/
+/**/build/
+
+# IDEs
+.idea/
+/*.iml
+*.classpath
+*.project
+*.settings/
+.vscode/
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+*.local.env
+docker-compose.override.yml
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Others
+node_modules/
