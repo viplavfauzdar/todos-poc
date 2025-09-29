@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
+Spring-Boot-Native-Processed: true
 Main-Class: org.springframework.boot.loader.launch.JarLauncher
 Start-Class: com.example.todos.DemoApplication
 Spring-Boot-Version: 3.3.3
